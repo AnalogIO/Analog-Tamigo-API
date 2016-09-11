@@ -283,4 +283,4 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
-Analog-Tamigo-API/Web.config
+/Analog-Tamigo-API/AppSettingsSecrets.config
