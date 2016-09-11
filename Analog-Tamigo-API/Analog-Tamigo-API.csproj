@@ -142,6 +142,13 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Properties\PublishProfiles\AnalogIOShiftsAPI.pubxml" />
+    <None Include="Web.config.default" />
+    <None Include="Web.config.Debug.default">
+      <DependentUpon>Web.config.default</DependentUpon>
+    </None>
+    <None Include="Web.config.Release.default">
+      <DependentUpon>Web.config.default</DependentUpon>
+    </None>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
