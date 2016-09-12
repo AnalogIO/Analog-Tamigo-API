@@ -11,6 +11,8 @@ namespace Analog_Tamigo_API
         {
             // Web API configuration and services
 
+            config.EnableCors();
+
             // Web API routes
             config.MapHttpAttributeRoutes();
 

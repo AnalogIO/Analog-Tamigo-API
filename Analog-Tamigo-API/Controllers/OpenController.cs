@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using WebApi.OutputCache.V2;
 
 namespace Analog_Tamigo_API.Controllers
@@ -21,6 +22,7 @@ namespace Analog_Tamigo_API.Controllers
 
         [CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 60)]
         [HttpGet]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         public async Task<IHttpActionResult> GetIsOpen()
         {
             var isOpen = await _client.IsOpen();

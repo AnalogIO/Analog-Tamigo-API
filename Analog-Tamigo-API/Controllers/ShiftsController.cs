@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using WebApi.OutputCache.V2;
 
 namespace Analog_Tamigo_API.Controllers
@@ -27,14 +28,16 @@ namespace Analog_Tamigo_API.Controllers
         // GET: api/shifts
         [CacheOutput(ClientTimeSpan = 1800, ServerTimeSpan = 1800)]
         [HttpGet]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         public async Task<IHttpActionResult> Get()
         {
-            var shifts = (await _client.GetShifts()).Where(shift => shift.Close > DateTime.Now);
+            var shifts = (await _client.GetShifts()).Where(shift => shift.Close > DateTime.Today);
             return Ok(shifts);
         }
 
         // GET: api/shifts/today
         [HttpGet, Route("today")]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         public async Task<IHttpActionResult> GetToday()
         {
             var shifts = await _client.GetShifts(DateTime.Today);
@@ -42,6 +45,7 @@ namespace Analog_Tamigo_API.Controllers
         }
 
         [HttpGet, Route("day/{date}")]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         public async Task<IHttpActionResult> GetDate(string date)
         {
             DateTime d;
