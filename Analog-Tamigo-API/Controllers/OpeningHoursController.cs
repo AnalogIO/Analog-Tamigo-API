@@ -38,7 +38,7 @@ namespace Analog_Tamigo_API.Controllers
 
             var shifts = (await _client.GetShifts()).Where(shift => shift.Close > DateTime.Today);
 
-            var openingHoursDto = new OpeningHoursDTO { StartHour = start, EndHour = end, IntervalMinutes = interval, Shifts = new Dictionary<string, List<OpeningHoursShift>>() };
+            var openingHoursDto = new OpeningHoursDTO { StartHour = start, EndHour = end, IntervalMinutes = interval, Shifts = new SortedDictionary<string, List<OpeningHoursShift>>() };
 
             var startDate = shifts.OrderBy(x => x.Open).FirstOrDefault().Open.DayOfYear;
             var endDate = shifts.OrderBy(x => x.Open).LastOrDefault().Open.DayOfYear;
@@ -46,6 +46,7 @@ namespace Analog_Tamigo_API.Controllers
             for (int i = startDate; i <= endDate; i++)
             {
                 var currentDate = new DateTime(DateTime.Now.Year, 1, 1, start, 0, 0).AddDays(i - 1);
+                var currentDateString = String.Format("{0:yyyy-MM-dd}", currentDate);
                 if (currentDate.DayOfWeek == DayOfWeek.Saturday || currentDate.DayOfWeek == DayOfWeek.Sunday) continue;
                 while(currentDate.Hour < end)
                 {
@@ -56,11 +57,11 @@ namespace Analog_Tamigo_API.Controllers
                         openingHourShift.Open = (shift.Employees.Count() > 0);
                         openingHourShift.Employees = shift.Employees;
                     }
-                    if (!openingHoursDto.Shifts.ContainsKey(currentDate.ToShortDateString()))
+                    if (!openingHoursDto.Shifts.ContainsKey(currentDateString))
                     {
-                        openingHoursDto.Shifts.Add(currentDate.ToShortDateString(), new List<OpeningHoursShift>());
+                        openingHoursDto.Shifts.Add(currentDateString, new List<OpeningHoursShift>());
                     }
-                    openingHoursDto.Shifts[currentDate.ToShortDateString()].Add(openingHourShift);
+                    openingHoursDto.Shifts[currentDateString].Add(openingHourShift);
                     currentDate = currentDate.AddMinutes(interval);
                 }   
             }
