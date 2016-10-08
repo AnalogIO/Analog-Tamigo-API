@@ -132,12 +132,15 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\OpenController.cs" />
+    <Compile Include="Controllers\OpeningHoursController.cs" />
     <Compile Include="Controllers\ShiftsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Logic\ITamigoClient.cs" />
     <Compile Include="Logic\TamigoClient.cs" />
+    <Compile Include="Models\OpeningHoursDTO.cs" />
+    <Compile Include="Models\OpeningHoursShift.cs" />
     <Compile Include="Models\Requests\LoginRequest.cs" />
     <Compile Include="Models\Responses\LoginResponse.cs" />
     <Compile Include="Models\ShiftDTO.cs" />
