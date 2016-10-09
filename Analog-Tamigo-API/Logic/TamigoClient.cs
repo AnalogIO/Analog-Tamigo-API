@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Analog_Tamigo_API.Models.Responses;
 using System.Net.Http;
 using Analog_Tamigo_API.Models.Requests;
@@ -15,7 +15,7 @@ namespace Analog_Tamigo_API.Logic
         private readonly HttpClient _client;
         private Task<string> _userLoginTask;
         private string _userToken;
-        private readonly Action _relogin;
+        private readonly Action _userRelogin;
 
         public TamigoClient(string email, string password)
         {
@@ -23,17 +23,17 @@ namespace Analog_Tamigo_API.Logic
             _client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
             _client.BaseAddress = new Uri("https://api.tamigo.com/");
 
-            _relogin = () =>
+            _userRelogin = () =>
             {
                 _userLoginTask = UserLogin(email, password);
             };
 
-            _relogin();
+            _userRelogin();
         }
 
         private async Task<string> UserLogin(string email, string password)
         {
-            var credentials = new LoginRequest { Email = email, Password = password };
+            var credentials = new UserLoginRequest { Email = email, Password = password };
             var response = await _client.PostAsJsonAsync("login", credentials);
 
             if (response.IsSuccessStatusCode)
@@ -65,7 +65,7 @@ namespace Analog_Tamigo_API.Logic
             }
             using (var result = await _client.GetAsync($"shifts/day/{date.ToString("yyyy-MM-dd")}/?securitytoken={_userToken}"))
             {
-                return await RetrieveShiftFromResponse(result);
+                return await RetrieveShiftsFromResponse(result);
             }
         }
 
@@ -102,7 +102,49 @@ namespace Analog_Tamigo_API.Logic
             return (await GetShifts(DateTime.Today)).Any(shift => shift.Open <= DateTime.Now && shift.Close >= DateTime.Now);
         }
 
-        private async Task<IEnumerable<ShiftDTO>> RetrieveShiftFromResponse(HttpResponseMessage response)
+        public async Task<IEnumerable<VolunteerDto>> GetEmployees()
+        {
+            if (_userToken == null)
+            {
+                _userToken = await _userLoginTask;
+                if (_userToken == null) throw new InvalidOperationException("Wrong username or password");
+            }
+
+            using (var result = await _client.GetAsync($"contacts/?securitytoken={_userToken}"))
+            {
+                var contacts = await RetrieveContactsFromResponse(result);
+
+                return contacts
+                    .Where(contact => contact.Email != "analogen@cafeanalog.dk")
+                    .Select(contact => new VolunteerDto
+                {
+                    Name = contact.FirstName,
+
+                    // TODO: Define default
+                    Photo = string.IsNullOrWhiteSpace(contact.ImageUrl) ? null : $"https://app.tamigo.com/Public/Photos/{Path.GetFileName(contact.ImageUrl)}",
+
+                    Study = null, // TODO: See if we can get Analog to enter this data.
+
+                    // TODO: Role (President, Board member, barista and so on).
+                });
+            }
+        }
+
+        private async Task<IEnumerable<Contact>> RetrieveContactsFromResponse(HttpResponseMessage response)
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsAsync<IEnumerable<Contact>>();
+            }
+
+            // The api probably returned unauthorized, because the token needs to be refreshed.
+            _userToken = null;
+            _userRelogin();
+
+            return new Contact[0];
+        }
+
+        private async Task<IEnumerable<ShiftDTO>> RetrieveShiftsFromResponse(HttpResponseMessage response)
         {
             if (response.IsSuccessStatusCode)
             {
@@ -118,12 +160,10 @@ namespace Analog_Tamigo_API.Logic
                     .OrderBy(shift => shift.Open)
                     .Where(shift => shift.Employees.Any(employee => employee != "Vacant"));
             }
-            else
-            {
-                // The api probably returned unauthorized, because the token needs to be refreshed.
-                _userToken = null;
-                _relogin();
-            }
+            
+            // The api probably returned unauthorized, because the token needs to be refreshed.
+            _userToken = null;
+            _userRelogin();
 
             return new ShiftDTO[0];
         }

@@ -1,9 +1,8 @@
 ﻿using Analog_Tamigo_API.Models.Responses;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
+using Analog_Tamigo_API.Models;
 
 namespace Analog_Tamigo_API.Logic
 {
@@ -13,5 +12,6 @@ namespace Analog_Tamigo_API.Logic
         Task<IEnumerable<ShiftDTO>> GetShifts();
         Task<IEnumerable<ShiftDTO>> GetShifts(DateTime date);
         Task<IEnumerable<ShiftDTO>> GetShifts(DateTime from, DateTime to);
+        Task<IEnumerable<VolunteerDto>> GetEmployees();
     }
 }

@@ -3,12 +3,9 @@ using Analog_Tamigo_API.Models;
 using Analog_Tamigo_API.Models.Responses;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
-using System.Web.Http.Cors;
 using WebApi.OutputCache.V2;
 
 namespace Analog_Tamigo_API.Controllers
@@ -21,15 +18,10 @@ namespace Analog_Tamigo_API.Controllers
         {
             _client = client;
         }
-        public OpeningHoursController()
-        {
-            _client = new TamigoClient(ConfigurationManager.AppSettings["TamigoUsername"], ConfigurationManager.AppSettings["TamigoPassword"]);
-        }
 
         // GET: api/openinghours
         [CacheOutput(ClientTimeSpan = 1800, ServerTimeSpan = 1800)]
         [HttpGet]
-        [EnableCors(origins: "*", headers: "*", methods: "*")]
         public async Task<IHttpActionResult> Get()
         {
             var start = 8; // 8 am

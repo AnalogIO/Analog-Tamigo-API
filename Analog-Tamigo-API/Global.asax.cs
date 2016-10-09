@@ -12,6 +12,7 @@ namespace Analog_Tamigo_API
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
+            GlobalConfiguration.Configure(UnityConfig.RegisterComponents);
         }
     }
 }
