@@ -1,22 +1,25 @@
-﻿using Analog_Tamigo_API.Logic;
-using Analog_Tamigo_API.Models;
-using Analog_Tamigo_API.Models.Responses;
+﻿using Analog_Tamigo_API.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Analog_Tamigo_API.Mappers;
+using TamigoServices;
+using TamigoServices.Models.Responses;
 using WebApi.OutputCache.V2;
 
 namespace Analog_Tamigo_API.Controllers
 {
     public class OpeningHoursController : ApiController
     {
-        private readonly ITamigoClient _client;
+        private readonly ITamigoUserClient _client;
+        private readonly IMapper<Shift, ShiftDto> _shiftMapper;
 
-        public OpeningHoursController(ITamigoClient client)
+        public OpeningHoursController(ITamigoUserClient client, IMapper<Shift, ShiftDto> shiftMapper)
         {
             _client = client;
+            _shiftMapper = shiftMapper;
         }
 
         // GET: api/openinghours
@@ -26,27 +29,36 @@ namespace Analog_Tamigo_API.Controllers
         {
             var start = 8; // 8 am
             var end = 16; // 4 pm
-            var interval = 30; // 30 minutes
+            const int interval = 30; // 30 minutes
 
-            var shifts = (await _client.GetShifts()).Where(shift => shift.Close > DateTime.Today);
+            var shifts = _shiftMapper.Map(await _client.GetShifts()).Where(shift => shift.Close > DateTime.Today).ToList();
 
-            var openingHoursDto = new OpeningHoursDTO { StartHour = start, EndHour = end, IntervalMinutes = interval, Shifts = new SortedDictionary<string, List<OpeningHoursShift>>() };
+            if (!shifts.Any())
+            {
+                return Ok(new OpeningHoursDto { StartHour = start, EndHour = end, IntervalMinutes = interval, Shifts = new SortedDictionary<string, List<OpeningHoursShift>>() });
+            }
 
-            var startDate = shifts.OrderBy(x => x.Open).FirstOrDefault().Open.DayOfYear;
-            var endDate = shifts.OrderBy(x => x.Open).LastOrDefault().Open.DayOfYear;
+            start = shifts.Min(s => s.Open.Hour);
+            end = shifts.Max(s => s.Close.Hour);
 
-            for (int i = startDate; i <= endDate; i++)
+            var openingHoursDto = new OpeningHoursDto { StartHour = start, EndHour = end, IntervalMinutes = interval, Shifts = new SortedDictionary<string, List<OpeningHoursShift>>() };
+
+            var startDate = shifts.Min(s => s.Open.DayOfYear);
+            var endDate = shifts.Max(s => s.Open.DayOfYear);
+
+            for (var i = startDate; i <= endDate; i++)
             {
                 var currentDate = new DateTime(DateTime.Now.Year, 1, 1, start, 0, 0).AddDays(i - 1);
-                var currentDateString = String.Format("{0:yyyy-MM-dd}", currentDate);
+                var currentDateString = $"{currentDate:yyyy-MM-dd}";
                 if (currentDate.DayOfWeek == DayOfWeek.Saturday || currentDate.DayOfWeek == DayOfWeek.Sunday) continue;
                 while(currentDate.Hour < end)
                 {
                     var openingHourShift = new OpeningHoursShift { ShiftStart = currentDate, Employees = new List<string>() };
 
-                    foreach (ShiftDTO shift in shifts.Where(x => x.Open <= currentDate && x.Close >= currentDate.AddMinutes(interval)).ToList())
+                    var date = currentDate;
+                    foreach (var shift in shifts.Where(x => x.Open <= date && x.Close >= date.AddMinutes(interval)))
                     {
-                        openingHourShift.Open = (shift.Employees.Count() > 0);
+                        openingHourShift.Open = shift.Employees.Any();
                         openingHourShift.Employees = shift.Employees;
                     }
                     if (!openingHoursDto.Shifts.ContainsKey(currentDateString))

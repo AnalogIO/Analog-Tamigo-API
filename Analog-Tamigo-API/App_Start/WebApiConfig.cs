@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Serialization;
+﻿using System;
+using Newtonsoft.Json.Serialization;
 using System.Linq;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
@@ -15,10 +16,9 @@ namespace Analog_Tamigo_API
             // Web API configuration and services
             config.EnableCors(new EnableCorsAttribute(origins: "*", headers: "*", methods: "*"));
 
-            config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
+            config.Formatters.Remove(config.Formatters.JsonFormatter);
 
-            var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
-            jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            config.Formatters.Add(new BrowserJsonFormatter());
 
             // Web API routes
             config.MapHttpAttributeRoutes();
@@ -28,6 +28,22 @@ namespace Analog_Tamigo_API
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+        }
+    }
+
+    public class BrowserJsonFormatter : JsonMediaTypeFormatter
+    {
+        public BrowserJsonFormatter()
+        {
+            SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
+            SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+        }
+
+        public override void SetDefaultContentHeaders(Type type, HttpContentHeaders headers, MediaTypeHeaderValue mediaType)
+        {
+            base.SetDefaultContentHeaders(type, headers, mediaType);
+            headers.ContentType = new MediaTypeHeaderValue("application/json");
         }
     }
 }

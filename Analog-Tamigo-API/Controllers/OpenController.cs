@@ -1,15 +1,15 @@
-﻿using Analog_Tamigo_API.Logic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
+using TamigoServices;
 using WebApi.OutputCache.V2;
 
 namespace Analog_Tamigo_API.Controllers
 {
     public class OpenController : ApiController
     {
-        private readonly ITamigoClient _client;
+        private readonly ITamigoUserClient _client;
 
-        public OpenController(ITamigoClient client)
+        public OpenController(ITamigoUserClient client)
         {
             _client = client;
         }
