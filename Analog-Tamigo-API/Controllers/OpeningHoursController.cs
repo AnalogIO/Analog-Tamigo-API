@@ -32,10 +32,13 @@ namespace Analog_Tamigo_API.Controllers
 
             var openingHoursDto = new OpeningHoursDTO { StartHour = start, EndHour = end, IntervalMinutes = interval, Shifts = new SortedDictionary<string, List<OpeningHoursShift>>() };
 
-            var startDate = shifts.OrderBy(x => x.Open).FirstOrDefault().Open.DayOfYear;
-            var endDate = shifts.OrderBy(x => x.Open).LastOrDefault().Open.DayOfYear;
+            var startDate = shifts.OrderBy(x => x.Open).FirstOrDefault();
+            var endDate = shifts.OrderBy(x => x.Open).LastOrDefault();
 
-            for (int i = startDate; i <= endDate; i++)
+            if (start > startDate.Open.Hour) start = startDate.Open.Hour; // if there's a planned shift outside of the default 8-16 block (0-8)
+            if (end < endDate.Open.Hour) end = endDate.Open.Hour; // if there's a planned shift outside of the default 8-16 block (16-24)
+
+            for (int i = startDate.Open.DayOfYear; i <= endDate.Open.DayOfYear; i++)
             {
                 var currentDate = new DateTime(DateTime.Now.Year, 1, 1, start, 0, 0).AddDays(i - 1);
                 var currentDateString = String.Format("{0:yyyy-MM-dd}", currentDate);
