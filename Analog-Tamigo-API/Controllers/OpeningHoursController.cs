@@ -32,6 +32,8 @@ namespace Analog_Tamigo_API.Controllers
 
             var openingHoursDto = new OpeningHoursDTO { StartHour = start, EndHour = end, IntervalMinutes = interval, Shifts = new SortedDictionary<string, List<OpeningHoursShift>>() };
 
+            if (shifts.Count() == 0) return Ok(openingHoursDto); // if no shifts are available then return the opening hours dto with an empty dictionary for shifts.
+
             var startDate = shifts.OrderBy(x => x.Open).FirstOrDefault();
             var endDate = shifts.OrderBy(x => x.Open).LastOrDefault();
 
