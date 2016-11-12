@@ -1,4 +1,5 @@
 ﻿using Analog_Tamigo_API.Logic;
+using CacheCow.Server.CacheControlPolicy;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -14,6 +15,7 @@ namespace Analog_Tamigo_API.Controllers
         }
 
         //[CacheOutput(ClientTimeSpan = 60)]
+        [HttpCacheControlPolicy(true, 60)]
         [HttpGet]
         public async Task<IHttpActionResult> GetIsOpen()
         {

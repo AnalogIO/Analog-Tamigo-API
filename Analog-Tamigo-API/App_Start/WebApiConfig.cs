@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using Newtonsoft.Json;
+using CacheCow.Server;
 
 namespace Analog_Tamigo_API
 {
@@ -15,7 +16,7 @@ namespace Analog_Tamigo_API
             // Web API configuration and services
             config.EnableCors(new EnableCorsAttribute(origins: "*", headers: "*", methods: "*"));
 
-            config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
+            GlobalConfiguration.Configuration.MessageHandlers.Add(new CachingHandler(GlobalConfiguration.Configuration));
 
             var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
             jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
