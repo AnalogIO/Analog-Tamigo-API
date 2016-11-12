@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Analog_Tamigo_API.Logic;
 using Analog_Tamigo_API.Models;
-using WebApi.OutputCache.V2;
 
 namespace Analog_Tamigo_API.Controllers
 {
@@ -18,7 +17,7 @@ namespace Analog_Tamigo_API.Controllers
         }
 
         [HttpGet]
-        [CacheOutput(ClientTimeSpan = 3600, ServerTimeSpan = 3600)]
+        //[CacheOutput(ClientTimeSpan = 3600, ServerTimeSpan = 3600)]
         public async Task<IEnumerable<VolunteerDto>> Get()
         {
             return await _tamigoClient.GetEmployees();

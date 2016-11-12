@@ -1,7 +1,6 @@
 ﻿using Analog_Tamigo_API.Logic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using WebApi.OutputCache.V2;
 
 namespace Analog_Tamigo_API.Controllers
 {
@@ -14,7 +13,7 @@ namespace Analog_Tamigo_API.Controllers
             _client = client;
         }
 
-        [CacheOutput(ClientTimeSpan = 60)]
+        //[CacheOutput(ClientTimeSpan = 60)]
         [HttpGet]
         public async Task<IHttpActionResult> GetIsOpen()
         {

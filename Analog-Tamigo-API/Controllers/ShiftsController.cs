@@ -3,7 +3,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using WebApi.OutputCache.V2;
 
 namespace Analog_Tamigo_API.Controllers
 {
@@ -18,7 +17,7 @@ namespace Analog_Tamigo_API.Controllers
         }
 
         // GET: api/shifts
-        [CacheOutput(ClientTimeSpan = 1800, ServerTimeSpan = 1800)]
+        //[CacheOutput(ClientTimeSpan = 1800, ServerTimeSpan = 1800)]
         [HttpGet]
         public async Task<IHttpActionResult> Get()
         {
