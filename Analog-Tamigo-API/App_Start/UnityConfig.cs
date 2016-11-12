@@ -13,10 +13,12 @@ namespace Analog_Tamigo_API
 			var container = new UnityContainer();
             
             // e.g. container.RegisterType<ITestService, TestService>();
-            container.RegisterType<ITamigoClient, TamigoClient>(new ContainerControlledLifetimeManager(),
+            container.RegisterType<ITamigoClient, CachedTamigoClient>(new ContainerControlledLifetimeManager(),
                 new InjectionConstructor(
-                    ConfigurationManager.AppSettings["TamigoUsername"],
-                    ConfigurationManager.AppSettings["TamigoPassword"]
+                    new TamigoClient(
+                        ConfigurationManager.AppSettings["TamigoUsername"],
+                        ConfigurationManager.AppSettings["TamigoPassword"]
+                    )
                 )
             );
             

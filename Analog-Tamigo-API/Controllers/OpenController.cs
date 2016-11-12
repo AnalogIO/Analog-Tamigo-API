@@ -14,8 +14,6 @@ namespace Analog_Tamigo_API.Controllers
             _client = client;
         }
 
-        //[CacheOutput(ClientTimeSpan = 60)]
-        [HttpCacheControlPolicy(true, 60)]
         [HttpGet]
         public async Task<IHttpActionResult> GetIsOpen()
         {

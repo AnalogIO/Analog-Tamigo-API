@@ -18,8 +18,6 @@ namespace Analog_Tamigo_API.Controllers
         }
 
         // GET: api/shifts
-        //[CacheOutput(ClientTimeSpan = 1800, ServerTimeSpan = 1800)]
-        [HttpCacheControlPolicy(true, 1800)]
         [HttpGet]
         public async Task<IHttpActionResult> Get()
         {

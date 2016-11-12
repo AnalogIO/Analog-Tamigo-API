@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Analog_Tamigo_API.Models.Responses;
 using System.Net.Http;
+using System.Web.Hosting;
 using Analog_Tamigo_API.Models.Requests;
 using Analog_Tamigo_API.Models;
 
@@ -25,7 +26,7 @@ namespace Analog_Tamigo_API.Logic
 
             _userRelogin = () =>
             {
-                _userLoginTask = UserLogin(email, password);
+                HostingEnvironment.QueueBackgroundWorkItem(ct => _userLoginTask = UserLogin(email, password));
             };
 
             _userRelogin();
