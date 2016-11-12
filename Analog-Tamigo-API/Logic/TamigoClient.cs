@@ -33,15 +33,20 @@ namespace Analog_Tamigo_API.Logic
 
         private async Task<string> UserLogin(string email, string password)
         {
-            var credentials = new UserLoginRequest { Email = email, Password = password };
-            var response = await _client.PostAsJsonAsync("login", credentials);
-
-            if (response.IsSuccessStatusCode)
+            for(var i = 0; i < 4; i++)
             {
-                var loginresult = await response.Content.ReadAsAsync<LoginResponse>();
-                return loginresult.SessionToken;
-            }
+                var credentials = new UserLoginRequest {Email = email, Password = password};
+                var response = await _client.PostAsJsonAsync("login", credentials);
 
+                if (response.IsSuccessStatusCode)
+                {
+                    var loginresult = await response.Content.ReadAsAsync<LoginResponse>();
+                    return loginresult.SessionToken;
+                }
+                Console.WriteLine($"Problem with logging in :-( Status code: {response.StatusCode}");
+                Console.WriteLine($"Retries: {i}");
+            }
+            Console.WriteLine("Tried to login 4 times with failure. Won't try anymore :-(");
             return null;
         }
 
