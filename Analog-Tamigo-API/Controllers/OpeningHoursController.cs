@@ -41,7 +41,7 @@ namespace Analog_Tamigo_API.Controllers
 
             for (int i = startDate.Open.DayOfYear; i <= endDate.Open.DayOfYear; i++)
             {
-                var currentDate = new DateTime(DateTime.Now.Year, 1, 1, start, 0, 0).AddDays(i - 1);
+                var currentDate = new DateTime(DateTime.Now.Year, 1, 1, start, 0, 0, DateTimeKind.Local).AddDays(i - 1);
                 var currentDateString = String.Format("{0:yyyy-MM-dd}", currentDate);
                 if (currentDate.DayOfWeek == DayOfWeek.Saturday || currentDate.DayOfWeek == DayOfWeek.Sunday) continue;
                 while(currentDate.Hour < end)
