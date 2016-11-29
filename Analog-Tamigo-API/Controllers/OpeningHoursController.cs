@@ -1,7 +1,6 @@
 ﻿using Analog_Tamigo_API.Logic;
 using Analog_Tamigo_API.Models;
 using Analog_Tamigo_API.Models.Responses;
-using CacheCow.Server.CacheControlPolicy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,10 +30,11 @@ namespace Analog_Tamigo_API.Controllers
 
             var openingHoursDto = new OpeningHoursDTO { StartHour = start, EndHour = end, IntervalMinutes = interval, Shifts = new SortedDictionary<string, List<OpeningHoursShift>>() };
 
-            if (shifts.Count() == 0) return Ok(openingHoursDto); // if no shifts are available then return the opening hours dto with an empty dictionary for shifts.
+            var shiftDtos = shifts as IList<ShiftDTO> ?? shifts.ToList();
+            if (shiftDtos.Count() == 0) return Ok(openingHoursDto); // if no shifts are available then return the opening hours dto with an empty dictionary for shifts.
 
-            var startDate = shifts.OrderBy(x => x.Open).FirstOrDefault();
-            var endDate = shifts.OrderBy(x => x.Open).LastOrDefault();
+            var startDate = shiftDtos.OrderBy(x => x.Open).FirstOrDefault();
+            var endDate = shiftDtos.OrderBy(x => x.Open).LastOrDefault();
 
             if (start > startDate.Open.Hour) start = startDate.Open.Hour; // if there's a planned shift outside of the default 8-16 block (0-8)
             if (end < endDate.Open.Hour) end = endDate.Open.Hour; // if there's a planned shift outside of the default 8-16 block (16-24)
@@ -48,7 +48,7 @@ namespace Analog_Tamigo_API.Controllers
                 {
                     var openingHourShift = new OpeningHoursShift { ShiftStart = currentDate, Employees = new List<string>() };
 
-                    foreach (ShiftDTO shift in shifts.Where(x => x.Open <= currentDate && x.Close >= currentDate.AddMinutes(interval)).ToList())
+                    foreach (ShiftDTO shift in shiftDtos.Where(x => x.Open <= currentDate && x.Close >= currentDate.AddMinutes(interval)).ToList())
                     {
                         openingHourShift.Open = (shift.Employees.Count() > 0);
                         openingHourShift.Employees = shift.Employees;
