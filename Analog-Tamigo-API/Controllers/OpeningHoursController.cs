@@ -39,8 +39,11 @@ namespace Analog_Tamigo_API.Controllers
             var startDate = shiftDtos.OrderBy(x => x.Open).FirstOrDefault();
             var endDate = shiftDtos.OrderBy(x => x.Open).LastOrDefault();
 
-            if (start > startDate.Open.Hour) start = startDate.Open.Hour; // if there's a planned shift outside of the default 8-16 block (0-8)
-            if (end < endDate.Open.Hour) end = endDate.Open.Hour; // if there's a planned shift outside of the default 8-16 block (16-24)
+            var earliestHour = shiftDtos.OrderBy(x => x.Open.Hour).FirstOrDefault().Open.Hour;
+            var latestHour = shiftDtos.OrderBy(x => x.Close.Hour).LastOrDefault().Close.Hour;
+
+            if (start > earliestHour) start = earliestHour; // if there's a planned shift outside of the default 8-16 block (0-8)
+            if (end < latestHour) end = latestHour; // if there's a planned shift outside of the default 8-16 block (16-24)
 
             for (int i = startDate.Open.DayOfYear; i <= endDate.Open.DayOfYear; i++)
             {
@@ -64,6 +67,9 @@ namespace Analog_Tamigo_API.Controllers
                     currentDate = currentDate.AddMinutes(interval);
                 }   
             }
+
+            openingHoursDto.StartHour = start;
+            openingHoursDto.EndHour = end;
 
             return Ok(openingHoursDto);
         }
