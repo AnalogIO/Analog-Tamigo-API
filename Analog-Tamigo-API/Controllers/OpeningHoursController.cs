@@ -26,7 +26,10 @@ namespace Analog_Tamigo_API.Controllers
             var end = 16; // 4 pm
             var interval = 30; // 30 minutes
 
-            var shifts = (await _client.GetShifts()).Where(shift => shift.Close > DateTime.Today);
+            var monday = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday); // gets the date from monday in the week
+            var sunday = monday.AddDays(6); // gets the date from sunday in the week
+
+            var shifts = await _client.GetShifts(monday,sunday); // returning weekly shifts
 
             var openingHoursDto = new OpeningHoursDTO { StartHour = start, EndHour = end, IntervalMinutes = interval, Shifts = new SortedDictionary<string, List<OpeningHoursShift>>() };
 
