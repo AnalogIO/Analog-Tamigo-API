@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using CacheCow.Server.CacheControlPolicy;
 
 namespace Analog_Tamigo_API.Controllers
 {
@@ -19,6 +20,7 @@ namespace Analog_Tamigo_API.Controllers
         }
 
         // GET: api/openinghours
+        [HttpCacheControlPolicy(true, 0, true)]
         [HttpGet]
         public async Task<IHttpActionResult> Get()
         {

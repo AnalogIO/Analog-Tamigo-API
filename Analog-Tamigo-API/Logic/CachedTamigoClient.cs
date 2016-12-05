@@ -33,6 +33,11 @@ namespace Analog_Tamigo_API.Logic
             HostingEnvironment.QueueBackgroundWorkItem(ct => FillCache());
         }
 
+        public void FillCacheBackground(DateTime from, DateTime to)
+        {
+            HostingEnvironment.QueueBackgroundWorkItem(ct => FillCache(from,to));
+        }
+
         public async Task FillCache()
         {
             if (DateTime.Now - _lastRefresh > FiveMinutes
@@ -42,6 +47,19 @@ namespace Analog_Tamigo_API.Logic
                 _lastRefresh = DateTime.Now;
                 var newCache = new List<ShiftDTO>();
                 newCache.AddRange(await _client.GetShifts());
+                _cache = newCache;
+            }
+        }
+
+        public async Task FillCache(DateTime from, DateTime to)
+        {
+            if (DateTime.Now - _lastRefresh > FiveMinutes
+                || !_cache.Any()
+                || (_cache.Any(shift => shift.Open < DateTime.Now) && DateTime.Now.Subtract(_cache.Where(shift => shift.Open < DateTime.Now).Max(shift => shift.Open)) < DateTime.Now.Subtract(_lastRefresh)))
+            {
+                _lastRefresh = DateTime.Now;
+                var newCache = new List<ShiftDTO>();
+                newCache.AddRange(await _client.GetShifts(from,to));
                 _cache = newCache;
             }
         }
@@ -68,7 +86,7 @@ namespace Analog_Tamigo_API.Logic
 
         public async Task<IEnumerable<ShiftDTO>> GetShifts(DateTime @from, DateTime to)
         {
-            FillCacheBackground();
+            FillCacheBackground(from,to);
             if (_cache.Exists(shift => shift.Open.Date == from.Date) &&
                 _cache.Exists(shift => shift.Open.Date == to.Date))
                 return _cache.Where(shift => shift.Open > from && shift.Close < to);
