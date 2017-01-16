@@ -26,6 +26,12 @@ namespace Analog_Tamigo_API.Controllers
             return Ok(shifts);
         }
 
+        //// GET: api/shifts // NEW SHIFTPLANNING FIX
+        //public IHttpActionResult Get()
+        //{
+        //    return Redirect("https://analogio.dk/publicshiftplanning/api/shifts/analog");
+        //}
+
         // GET: api/shifts/today
         [HttpGet, Route("today")]
         public async Task<IHttpActionResult> GetToday()
