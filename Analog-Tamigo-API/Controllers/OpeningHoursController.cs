@@ -19,6 +19,12 @@ namespace Analog_Tamigo_API.Controllers
             _client = client;
         }
 
+        //// GET: api/openinghours // NEW SHIFTPLANNING FIX
+        //public IHttpActionResult Get()
+        //{
+        //    return Redirect("https://analogio.dk/publicshiftplanning/api/openinghours/analog");
+        //}
+
         // GET: api/openinghours
         [HttpCacheControlPolicy(true, 0, true)]
         [HttpGet]
