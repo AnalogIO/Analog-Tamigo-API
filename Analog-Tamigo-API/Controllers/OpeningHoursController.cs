@@ -42,7 +42,7 @@ namespace Analog_Tamigo_API.Controllers
             var openingHoursDto = new OpeningHoursDTO { StartHour = start, EndHour = end, IntervalMinutes = interval, Shifts = new SortedDictionary<string, List<OpeningHoursShift>>() };
 
             var shiftDtos = shifts as IList<ShiftDTO> ?? shifts.ToList();
-            if (shiftDtos.Count() == 0) return Ok(openingHoursDto); // if no shifts are available then return the opening hours dto with an empty dictionary for shifts.
+            if (!shiftDtos.Any()) return Ok(openingHoursDto); // if no shifts are available then return the opening hours dto with an empty dictionary for shifts.
 
             var startDate = shiftDtos.OrderBy(x => x.Open).FirstOrDefault();
             var endDate = shiftDtos.OrderBy(x => x.Open).LastOrDefault();
@@ -64,7 +64,7 @@ namespace Analog_Tamigo_API.Controllers
 
                     foreach (ShiftDTO shift in shiftDtos.Where(x => x.Open <= currentDate && x.Close >= currentDate.AddMinutes(interval)).ToList())
                     {
-                        openingHourShift.Open = (shift.Employees.Count() > 0);
+                        openingHourShift.Open = shift.Employees.Any();
                         openingHourShift.Employees = shift.Employees;
                     }
                     if (!openingHoursDto.Shifts.ContainsKey(currentDateString))

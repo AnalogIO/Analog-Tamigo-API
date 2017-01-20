@@ -1,9 +1,12 @@
 ﻿using Analog_Tamigo_API.Logic;
 using CacheCow.Server.CacheControlPolicy;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Analog_Tamigo_API.Models.Responses;
 
 namespace Analog_Tamigo_API.Controllers
 {
@@ -18,11 +21,31 @@ namespace Analog_Tamigo_API.Controllers
         }
 
         // GET: api/shifts
+        /*
         [HttpCacheControlPolicy(true, 0, true)]
         [HttpGet]
         public async Task<IHttpActionResult> Get()
         {
             var shifts = (await _client.GetShifts()).Where(shift => shift.Close > DateTime.Today);
+            return Ok(shifts);
+        }
+        */
+
+        [HttpGet]
+        public async Task<IHttpActionResult> Get()
+        {
+            var client = new HttpClient();
+            var url = "https://analogio.dk/publicshiftplanning/api/shifts/analog";
+            var responseMsg = await client.GetAsync(url);
+            var shiftResponse = responseMsg.Content.ReadAsAsync<List<ShiftResponse>>().Result;
+
+            var shifts = shiftResponse.Select(shift => new ShiftDTO
+            {
+                Open = shift.Open,
+                Close = shift.Close,
+                Employees = shift.Employees.Select(emp => emp.FirstName)
+            });
+
             return Ok(shifts);
         }
 

@@ -167,6 +167,9 @@
     <Compile Include="Logic\CachedTamigoClient.cs" />
     <Compile Include="Logic\ITamigoClient.cs" />
     <Compile Include="Logic\TamigoClient.cs" />
+    <Compile Include="Models\Responses\EmployeeDTO.cs" />
+    <Compile Include="Models\Responses\OpeningHourEmployeeDTO.cs" />
+    <Compile Include="Models\Responses\ShiftResponse.cs" />
     <Compile Include="Models\VolunteerDto.cs" />
     <Compile Include="Models\OpeningHoursDTO.cs" />
     <Compile Include="Models\OpeningHoursShift.cs" />
