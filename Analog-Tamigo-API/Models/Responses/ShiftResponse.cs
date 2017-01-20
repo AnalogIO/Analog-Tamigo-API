@@ -10,9 +10,9 @@ namespace Analog_Tamigo_API.Models.Responses
 
         public int Id { get; set; }
 
-        public DateTime Open { get; set; }
+        public DateTime Start { get; set; }
 
-        public DateTime Close { get; set; }
+        public DateTime End { get; set; }
 
         public IEnumerable<EmployeeDTO> Employees { get; set; }
 

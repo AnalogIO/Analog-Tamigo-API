@@ -41,8 +41,8 @@ namespace Analog_Tamigo_API.Controllers
 
             var shifts = shiftResponse.Select(shift => new ShiftDTO
             {
-                Open = shift.Open,
-                Close = shift.Close,
+                Open = shift.Start.ToUniversalTime().ToLocalTime(), // hack to match old tamigo api response
+                Close = shift.End.ToUniversalTime().ToLocalTime(), // hack to match old tamigo api response
                 Employees = shift.Employees.Select(emp => emp.FirstName)
             });
 
