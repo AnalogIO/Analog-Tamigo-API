@@ -14,12 +14,18 @@ namespace Analog_Tamigo_API.Controllers
             _client = client;
         }
 
-        [HttpCacheControlPolicy(true, 0, true)]
-        [HttpGet]
-        public async Task<IHttpActionResult> GetIsOpen()
+        //[HttpCacheControlPolicy(true, 0, true)]
+        //[HttpGet]
+        //public async Task<IHttpActionResult> GetIsOpen()
+        //{
+        //    var isOpen = await _client.IsOpen();
+        //    return Ok(new { open =  isOpen});
+        //}
+
+        // GET: api/open // NEW SHIFTPLANNING FIX
+        public IHttpActionResult GetIsOpen()
         {
-            var isOpen = await _client.IsOpen();
-            return Ok(new { open =  isOpen});
+            return Redirect("https://analogio.dk/publicshiftplanning/api/open/analog");
         }
     }
 }

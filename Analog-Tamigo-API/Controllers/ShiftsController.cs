@@ -35,9 +35,10 @@ namespace Analog_Tamigo_API.Controllers
         public async Task<IHttpActionResult> Get()
         {
             var client = new HttpClient();
-            var url = "https://analogio.dk/publicshiftplanning/api/shifts/analog";
+            const string url = "https://analogio.dk/publicshiftplanning/api/shifts/analog";
             var responseMsg = await client.GetAsync(url);
             var shiftResponse = responseMsg.Content.ReadAsAsync<List<ShiftResponse>>().Result;
+            client.Dispose();
 
             var shifts = shiftResponse.Select(shift => new ShiftDTO
             {
