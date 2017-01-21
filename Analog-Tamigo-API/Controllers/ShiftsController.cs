@@ -44,7 +44,7 @@ namespace Analog_Tamigo_API.Controllers
             {
                 Open = shift.Start.ToUniversalTime().ToLocalTime(), // hack to match old tamigo api response
                 Close = shift.End.ToUniversalTime().ToLocalTime(), // hack to match old tamigo api response
-                Employees = shift.Employees.Select(emp => emp.FirstName)
+                Employees = shift.CheckedInEmployees.Select(emp => emp.FirstName)
             });
 
             return Ok(shifts);
