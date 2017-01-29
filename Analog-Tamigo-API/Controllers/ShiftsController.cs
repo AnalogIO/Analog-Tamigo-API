@@ -3,8 +3,11 @@ using CacheCow.Server.CacheControlPolicy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using Analog_Tamigo_API.Models.Responses;
 
@@ -32,7 +35,7 @@ namespace Analog_Tamigo_API.Controllers
         */
 
         [HttpGet]
-        public async Task<IHttpActionResult> Get()
+        public async Task<HttpResponseMessage> Get()
         {
             var client = new HttpClient();
             const string url = "https://analogio.dk/publicshiftplanning/api/shifts/analog";
@@ -47,7 +50,14 @@ namespace Analog_Tamigo_API.Controllers
                 Employees = shift.CheckedInEmployees.Select(emp => emp.FirstName)
             });
 
-            return Ok(shifts);
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, shifts);
+
+            response.Headers.CacheControl = new CacheControlHeaderValue()
+            {
+                NoStore = true
+            };
+
+            return response;
         }
 
         //// GET: api/shifts // NEW SHIFTPLANNING FIX
