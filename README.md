@@ -9,3 +9,6 @@ The project requires a configuration file `AppSettingsSecrets.config` with the f
   <add key="TamigoPassword" value="PASSWORD_TO_TAMIGO"/>
 </appSettings>
 ```
+
+We are moving to our own shiftplanning platform:
+https://github.com/AnalogIO/ShiftPlanning_API
